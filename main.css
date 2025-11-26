@@ -1660,12 +1660,13 @@ div.paginate-container li:nth-last-child(2) a:after {
 }
 
 .pub-right>.publish {
-    float: right
+    float: none;
+    margin-top: 2px;
 }
 
 .pub-right>.publish>.publisher {
     color: #002336;
-    font-size: 16px
+    font-size: 14px
 }
 
 .pub-right>.publish>.status {
