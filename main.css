@@ -319,6 +319,16 @@ pre>code {
     width: calc(40% - (30px / 2))
 }
 
+.footer-col-center {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.footer-col-right {
+    text-align: right;
+    margin-top: 10px;
+}
+
 @media screen and (max-width: 800px) {
 
     .footer-col-1,
