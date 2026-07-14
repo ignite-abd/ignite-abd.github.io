@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Beyond Prediction — Verifiable Physiological Waveform Reasoning · KDD 2026 Tutorial</title>
+<meta name="description" content="KDD 2026 lecture-style tutorial on verifiable physiological waveform reasoning with foundation models and agentic LLMs." />
+<link rel="canonical" href="https://ignite-abd.github.io/kdd2026_tutorial.html" />
+
+<!-- Open Graph / Twitter — link-share preview -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Beyond Prediction: Toward Verifiable Physiological Waveform Reasoning — KDD 2026 Tutorial" />
+<meta property="og:description" content="A KDD 2026 lecture-style tutorial: moving waveform AI (ECG/PPG/EEG) from fluent prediction to conclusions grounded in explicit, replayable evidence." />
+<meta property="og:url" content="https://ignite-abd.github.io/kdd2026_tutorial.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Beyond Prediction: Verifiable Physiological Waveform Reasoning — KDD 2026 Tutorial" />
+<meta name="twitter:description" content="Advances, challenges, and future directions toward verifiable, closed-loop waveform reasoning." />
+
+<!-- Favicon: minimal ECG pulse (inline SVG, no external request) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FBFAF6'/%3E%3Cpath d='M2 16 H11 L13 16 L15 7 L18 25 L20 16 L23 16 L24 13 L25 16 H30' fill='none' stroke='%23B4432E' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E" />
+
+<!-- =====================================================================
+     KDD 2026 LECTURE-STYLE TUTORIAL — "Beyond Prediction"
+     Single self-contained file. Drop in a repo as index.html, enable
+     GitHub Pages, done. Presenter photos currently hotlink to the
+     RelSciFM workshop site so they work out of the box; to localize,
+     copy them into ./assets/img/ and swap the src paths.
+     Placeholders left as {{ ... }} — only Yan Liu photo + a few links.
+     ===================================================================== -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --paper:#FBFAF6; --paper-2:#F3F1EA; --ink:#1B1B18; --muted:#6C6A61;
+    --hair:#E1DED4; --accent:#2C5F5B; --pulse:#B4432E;
+    --serif:"Newsreader",Georgia,"Times New Roman",serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+    --maxw:1120px; --pad:clamp(20px,5vw,64px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+    font-size:19px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad);}
+  a{color:var(--ink);text-decoration-color:var(--hair);text-underline-offset:3px;}
+  a:hover{text-decoration-color:var(--accent);}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:500;}
+
+  /* nav */
+  nav.topbar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--hair);}
+  nav.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:58px;}
+  nav.topbar .brand{font-family:var(--mono);font-size:13px;letter-spacing:.03em;}
+  nav.topbar .links{display:flex;gap:clamp(14px,2.4vw,30px);}
+  nav.topbar .links a{font-family:var(--mono);font-size:12.5px;color:var(--muted);letter-spacing:.03em;text-decoration:none;}
+  nav.topbar .links a:hover{color:var(--ink);}
+  @media (max-width:720px){nav.topbar .links{display:none;}}
+
+  /* hero */
+  header.hero{padding-top:clamp(52px,9vw,100px);}
+  header.hero h1{font-weight:400;font-size:clamp(36px,6.6vw,80px);line-height:1.03;letter-spacing:-.02em;margin:18px 0 0;max-width:18ch;}
+  header.hero h1 em{font-style:italic;color:var(--accent);}
+  header.hero .sub{margin-top:22px;max-width:64ch;font-size:clamp(18px,2.2vw,22px);color:var(--muted);}
+  .wave{margin:38px 0 6px;width:100%;height:84px;display:block;}
+  .wave path{fill:none;stroke:var(--pulse);stroke-width:2;}
+  .wave .trace{stroke-dasharray:2600;stroke-dashoffset:2600;animation:draw 3.6s ease-out forwards;}
+  .wave .grid{stroke:var(--hair);stroke-width:1;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  @media (prefers-reduced-motion:reduce){.wave .trace{animation:none;stroke-dashoffset:0;}}
+
+  .meta{display:flex;flex-wrap:wrap;border-top:1px solid var(--hair);margin-top:12px;}
+  .meta .cell{flex:1 1 150px;padding:20px 24px 20px 0;border-right:1px solid var(--hair);}
+  .meta .cell:last-child{border-right:none;}
+  .meta .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+  .meta .v{margin-top:6px;font-size:18px;}
+  @media (max-width:720px){.meta .cell{flex-basis:100%;border-right:none;border-bottom:1px solid var(--hair);padding-right:0;}}
+
+  .ticker{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);overflow:hidden;white-space:nowrap;padding:14px 0;}
+  .ticker .run{display:inline-block;font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--muted);animation:slide 30s linear infinite;}
+  .ticker .run span{padding:0 24px;}
+  .ticker .run span::before{content:"\25C6";color:var(--accent);padding-right:24px;font-size:9px;vertical-align:middle;}
+  @keyframes slide{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @media (prefers-reduced-motion:reduce){.ticker .run{animation:none;}}
+
+  section{padding:clamp(56px,8vw,100px) 0;border-bottom:1px solid var(--hair);}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:32px;}
+  .sec-head .num{font-family:var(--mono);font-size:13px;color:var(--accent);}
+  .sec-head h2{font-weight:400;font-size:clamp(26px,4vw,40px);letter-spacing:-.01em;margin:0;}
+  .lede{max-width:70ch;font-size:clamp(18px,2vw,21px);}
+  .lede p{margin:0 0 1.1em;}
+
+  /* outline */
+  .outline{display:grid;}
+  .part{display:grid;grid-template-columns:150px 1fr;gap:28px;padding:26px 0;border-top:1px solid var(--hair);}
+  .part:last-child{border-bottom:1px solid var(--hair);}
+  .part .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--accent);padding-top:5px;}
+  .part.brk .lbl{color:var(--muted);}
+  .part h3{font-weight:500;font-size:20px;margin:0 0 8px;}
+  .part ul{margin:0;padding-left:1.1em;color:var(--muted);}
+  .part ul li{margin:2px 0;}
+  .part.brk h3{color:var(--muted);font-weight:400;font-style:italic;}
+  @media (max-width:720px){.part{grid-template-columns:1fr;gap:6px;}}
+
+  /* people */
+  .grp-label{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:8px 0 22px;}
+  .people{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:34px 26px;margin-bottom:12px;}
+  .person img{width:92px;height:92px;border-radius:50%;object-fit:cover;background:var(--paper-2);border:1px solid var(--hair);display:block;}
+  .person .name{font-size:19px;margin-top:14px;}
+  .person .name a{text-decoration:none;}
+  .person .aff{color:var(--muted);font-size:15px;}
+  .person .foc{font-size:14.5px;color:var(--muted);margin-top:6px;line-height:1.45;}
+  .contrib{max-width:78ch;color:var(--muted);font-size:17px;line-height:1.9;margin-top:6px;}
+  .contrib b{color:var(--ink);font-weight:500;}
+
+  ul.aud{list-style:none;padding:0;margin:0;max-width:74ch;}
+  ul.aud li{padding:14px 0;border-top:1px solid var(--hair);display:flex;gap:16px;}
+  ul.aud li:last-child{border-bottom:1px solid var(--hair);}
+  ul.aud li::before{content:"\2192";color:var(--accent);}
+  ul.aud li b{font-weight:600;}
+
+  .materials{display:flex;flex-wrap:wrap;gap:14px;}
+  .materials a{font-family:var(--mono);font-size:13px;letter-spacing:.03em;border:1px solid var(--hair);padding:12px 20px;border-radius:4px;text-decoration:none;color:var(--ink);}
+  .materials a:hover{border-color:var(--accent);color:var(--accent);}
+  .materials a[aria-disabled="true"]{color:var(--muted);pointer-events:none;}
+
+  pre.bib{background:var(--ink);color:#EDEBE3;font-family:var(--mono);font-size:12.5px;line-height:1.6;padding:24px;border-radius:6px;overflow-x:auto;}
+
+  footer{padding:46px 0 72px;color:var(--muted);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:13px;letter-spacing:.03em;}
+
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none;}}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="wrap">
+    <span class="brand">KDD 2026 · WAVEFORM REASONING</span>
+    <div class="links">
+      <a href="#abstract">Abstract</a>
+      <a href="#outline">Outline</a>
+      <a href="#presenters">Presenters</a>
+      <a href="#audience">Audience</a>
+      <a href="#materials">Materials</a>
+      <a href="#cite">Cite</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">KDD 2026 · Lecture-Style Tutorial</span>
+    <h1>Beyond Prediction: Toward <em>Verifiable</em> Physiological Waveform Reasoning</h1>
+    <p class="sub">Advances, challenges, and future directions — moving waveform AI from fluent prediction to conclusions grounded in explicit, replayable evidence.</p>
+    <svg class="wave" viewBox="0 0 1200 84" preserveAspectRatio="none" aria-hidden="true">
+      <line class="grid" x1="0" y1="42" x2="1200" y2="42" />
+      <path class="trace" d="M0,42 L120,42 L150,42 L165,28 L180,42 L210,42 L225,9 L240,75 L255,42 L360,42 L390,42 L405,28 L420,42 L450,42 L465,9 L480,75 L495,42 L600,42 L630,42 L645,28 L660,42 L690,42 L705,9 L720,75 L735,42 L840,42 L870,42 L885,28 L900,42 L930,42 L945,9 L960,75 L975,42 L1080,42 L1110,42 L1125,28 L1140,42 L1200,42" />
+    </svg>
+  </div>
+  <div class="wrap">
+    <div class="meta">
+      <div class="cell"><div class="k">Date</div><div class="v">August 9–13, 2026</div></div>
+      <div class="cell"><div class="k">Venue</div><div class="v">ICC Jeju, Republic of Korea</div></div>
+      <div class="cell"><div class="k">Format</div><div class="v">Lecture-style · 3 hours</div></div>
+      <div class="cell"><div class="k">Room</div><div class="v">TBA</div></div>
+    </div>
+  </div>
+  <div class="ticker" aria-hidden="true">
+    <div class="run">
+      <span>ECG</span><span>PPG</span><span>EEG</span><span>Physiological Foundation Models</span><span>Agentic LLMs</span><span>Verification Ledger</span><span>Plan · Act · Verify</span>
+      <span>ECG</span><span>PPG</span><span>EEG</span><span>Physiological Foundation Models</span><span>Agentic LLMs</span><span>Verification Ledger</span><span>Plan · Act · Verify</span>
+    </div>
+  </div>
+</header>
+
+<section id="abstract">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">01</span><h2>Abstract</h2></div>
+    <div class="lede reveal">
+      <p>Physiological waveforms (e.g., ECG, PPG, EEG) are high-fidelity measurements of underlying biological dynamics. Meaningful clinical interpretation hinges on localized morphology, precise timing, cross-lead consistency, and signal-quality awareness. Over the past few years, the field has seen rapid progress — yet most systems remain prediction-centric: they output labels or fluent rationales without exposing the localized, measurable evidence that supports intermediate claims and final decisions.</p>
+      <p>This tutorial advocates <em>verifiable physiological waveform reasoning</em>, where conclusions are supported by explicit evidence objects. Following the theme of Advances, Challenges, and Future Directions, we (i) review recent advances in physiological foundation models and LLM-centric adaptations, (ii) analyze key limitations and waveform-specific reasoning challenges, and (iii) outline future directions toward verifiable, closed-loop systems with clearer reasoning objectives, structures, and evaluation. We highlight a dual-process blueprint and a <em>Verification Ledger</em> that enable evidence-grounded, replayable assessment beyond accuracy — including traceability, robustness, and calibrated abstention.</p>
+    </div>
+  </div>
+</section>
+
+<section id="outline">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">02</span><h2>Tutorial Outline</h2></div>
+    <div class="outline reveal">
+      <div class="part">
+        <div class="lbl">15 min</div>
+        <div><h3>Introduction and Motivation</h3>
+          <ul><li>Physiological waveforms</li><li>Verifiable waveform reasoning</li><li>Reasoning taxonomy</li></ul></div>
+      </div>
+      <div class="part">
+        <div class="lbl">55 min</div>
+        <div><h3>Recent Advances</h3>
+          <ul><li>Physiological foundation models</li><li>LLM-centric adaptations</li></ul></div>
+      </div>
+      <div class="part brk">
+        <div class="lbl">10 min</div>
+        <div><h3>Break</h3></div>
+      </div>
+      <div class="part">
+        <div class="lbl">50 min</div>
+        <div><h3>Limitations and Challenges</h3>
+          <ul><li>Limitations of current advances</li><li>Reasoning challenges</li></ul></div>
+      </div>
+      <div class="part">
+        <div class="lbl">50 min</div>
+        <div><h3>Future Directions</h3>
+          <ul><li>Meaningful reasoning objectives</li><li>Reasoning structure</li><li>Model design</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="presenters">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">03</span><h2>Presenters</h2></div>
+
+    <div class="grp-label">In-person presenters</div>
+    <div class="people reveal">
+      <div class="person">
+        <img src="assets/img/carlyang.jpg" alt="Carl Yang" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
+        <div class="name"><a href="https://www.cs.emory.edu/~jyang71/">Carl Yang</a></div>
+        <div class="aff">Emory University</div>
+        <div class="foc">Corresponding tutor · graph mining, applied ML, health AI</div>
+      </div>
+      <div class="person">
+        <img src="assets/img/xiaodawang.jpg" alt="Xiaoda Wang" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
+        <div class="name"><a href="https://ignite-abd.github.io/">Xiaoda Wang</a></div>
+        <div class="aff">Emory University</div>
+        <div class="foc">Time-series foundation models, AI for science, LLMs</div>
+      </div>
+      <div class="person">
+        <img src="assets/img/yuehuang.jpg" alt="Yue Huang" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
+        <div class="name"><a href="https://howiehwong.github.io/">Yue Huang</a></div>
+        <div class="aff">University of Notre Dame</div>
+        <div class="foc">Trustworthiness of foundation models</div>
+      </div>
+      <div class="person">
+        <img src="assets/img/chang.jpg" alt="Chang Xu" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
+        <div class="name"><a href="https://chang-xu.github.io/">Chang Xu</a></div>
+        <div class="aff">Microsoft Research</div>
+        <div class="foc">Large-scale ML & foundation models for healthcare</div>
+      </div>
+      <div class="person">
+        <img src="assets/img/yanliu.jpg" alt="Yan Liu" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
+        <div class="name">Yan Liu</div>
+        <div class="aff">University of Southern California</div>
+        <div class="foc">ML & AI for healthcare, sustainability, social systems</div>
+      </div>
+    </div>
+
+    <div class="grp-label" style="margin-top:42px;">Contributors</div>
+    <p class="contrib reveal">
+      <b>Ching Chang</b> (UCLA / NYCU) · <b>Defu Cao</b> (USC) · <b>Kaiqiao Han</b> (UCLA) ·
+      <b>Fang Sun</b> (UCLA) · <b>Minxiao Wang</b> (Emory) · <b>Xiao Luo</b> (UW–Madison) ·
+      <b>Runze Yan</b> (Emory) · <b>Xiangliang Zhang</b> (Notre Dame) · <b>Xiao Hu</b> (Emory) ·
+      <b>Yizhou Sun</b> (UCLA) · <b>Wei Wang</b> (UCLA)
+    </p>
+  </div>
+</section>
+
+<section id="audience">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">04</span><h2>Target Audience &amp; Prerequisites</h2></div>
+    <ul class="aud reveal">
+      <li><span>Researchers &amp; practitioners in <b>data mining and machine learning</b> working on time series, multimodal learning, and foundation models</span></li>
+      <li><span>Those building <b>trustworthy ML and LLM-based agents</b>, especially for high-stakes settings</span></li>
+      <li><span>Anyone applying models to <b>physiological waveforms</b> (ECG / PPG / EEG) in clinical or wearable contexts</span></li>
+    </ul>
+    <p class="lede reveal" style="margin-top:26px;color:var(--muted)">The design principles and evaluation interfaces generalize to other real-world time-series domains — wearables, industrial sensing, and IoT. No specialized clinical background is assumed.</p>
+  </div>
+</section>
+
+<section id="materials">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">05</span><h2>Materials</h2></div>
+    <div class="materials reveal">
+      <a href="#" aria-disabled="true">Slides — coming soon</a>
+      <a href="/projects/Position_Reasoning.pdf">Position paper (ICML 2026) →</a>
+      <a href="https://arxiv.org/abs/2509.11575">Survey (arXiv) →</a>
+      <a href="https://kdd2026.kdd.org/">KDD 2026 →</a>
+    </div>
+    <p class="lede reveal" style="margin-top:24px;color:var(--muted);font-size:17px;">Slides and the accompanying survey paper will be posted here ahead of the conference.</p>
+  </div>
+</section>
+
+<section id="cite">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">06</span><h2>Citation</h2></div>
+    <pre class="bib reveal">@inproceedings{wang2026beyond,
+  title     = {Beyond Prediction: Toward Verifiable Physiological Waveform
+               Reasoning: Advances, Challenges, and Future Directions},
+  author    = {Wang, Xiaoda and Chang, Ching and Cao, Defu and Han, Kaiqiao
+               and Sun, Fang and Huang, Yue and Wang, Minxiao and Xu, Chang
+               and Luo, Xiao and Yan, Runze and Zhang, Xiangliang and Hu, Xiao
+               and Liu, Yan and Sun, Yizhou and Wang, Wei and Yang, Carl},
+  booktitle = {Proceedings of the 32nd ACM SIGKDD Conference on Knowledge
+               Discovery and Data Mining V.2 (KDD '26)},
+  year      = {2026},
+  publisher = {ACM},
+  doi       = {10.1145/3770855.3816466}
+}</pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>KDD 2026 · ICC Jeju, Republic of Korea</span>
+    <span>Contact: j.carlyang@emory.edu</span>
+  </div>
+</footer>
+
+<script>
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
