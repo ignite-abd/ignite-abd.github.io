@@ -180,8 +180,8 @@
   <div class="wrap">
     <div class="sec-head"><span class="num">01</span><h2>Abstract</h2></div>
     <div class="lede reveal">
-      <p>Physiological waveforms (e.g., ECG, PPG, EEG) are high-fidelity measurements of underlying biological dynamics. Meaningful clinical interpretation hinges on localized morphology, precise timing, cross-lead consistency, and signal-quality awareness. Over the past few years, the field has seen rapid progress — yet most systems remain prediction-centric: they output labels or fluent rationales without exposing the localized, measurable evidence that supports intermediate claims and final decisions.</p>
-      <p>This tutorial advocates <em>verifiable physiological waveform reasoning</em>, where conclusions are supported by explicit evidence objects. Following the theme of Advances, Challenges, and Future Directions, we (i) review recent advances in physiological foundation models and LLM-centric adaptations, (ii) analyze key limitations and waveform-specific reasoning challenges, and (iii) outline future directions toward verifiable, closed-loop systems with clearer reasoning objectives, structures, and evaluation. We highlight a dual-process blueprint and a <em>Verification Ledger</em> that enable evidence-grounded, replayable assessment beyond accuracy — including traceability, robustness, and calibrated abstention.</p>
+      <p>Physiological waveforms, such as ECG, PPG, and EEG, provide high-fidelity views of underlying biological dynamics. Reliable interpretation depends on localized morphology, temporal structure, cross-channel consistency, and signal-quality awareness. Yet most current AI systems remain prediction-centric: they produce labels or fluent explanations without exposing the measurable evidence that supports intermediate claims and final decisions.</p>
+      <p>This tutorial develops a broader path toward <em>verifiable physiological waveform reasoning</em>. We connect advances in temporal modeling and time-series foundation models with data-driven and physics-informed approaches to dynamical system modeling—including graph neural ordinary differential equations and generative AI—and with deep learning methods tailored to health time series, such as physiological foundation models and multimodal learning. Building on these perspectives, we examine current signal, data, and model limitations and outline future directions in waveform–language alignment, agentic Plan–Act–Verify reasoning, and verification-centered evaluation. The goal is to move waveform AI from fluent prediction toward conclusions that are explicit, traceable, and replayable.</p>
     </div>
   </div>
 </section>
@@ -191,36 +191,51 @@
     <div class="sec-head"><span class="num">02</span><h2>Tutorial Outline</h2></div>
     <div class="outline reveal">
       <div class="part">
-        <div class="lbl">1:00 – 1:30 PM</div>
+        <div class="lbl">1:00 – 1:15 PM</div>
         <div><h3>Introduction and Motivation (Carl Yang)</h3>
-          <ul><li>Physiological waveforms</li><li>Verifiable waveform reasoning</li><li>Reasoning taxonomy</li></ul></div>
+          <ul><li>Physiological waveforms</li><li>Verifiable waveform reasoning</li></ul></div>
       </div>
       <div class="part">
-        <div class="lbl">1:30 – 2:30 PM</div>
+        <div class="lbl">1:15 – 2:15 PM</div>
         <div><h3>Recent Advances: <em>Time Series Foundation Models: From Forecasting to Reasoning</em> (Yan Liu)</h3>
           <ul><li>Temporal modeling paradigms</li><li>Time-series foundation models</li><li>TEMPO: temporal decomposition and alignment</li></ul></div>
       </div>
       <div class="part">
-        <div class="lbl">2:30 – 3:00 PM</div>
-        <div><h3>Recent Advances: <em>Deep Learning for Health Time Series</em> (Xiaoda Wang)</h3>
-          <ul><li>Task-specific supervised learning</li><li>Physiological foundation models</li><li>Multimodal learning</li></ul></div>
+        <div class="lbl">2:15 – 3:00 PM</div>
+        <div><h3>Recent Advances: <em>Data-Driven and Physics-Informed Machine Learning for Dynamical System Modeling</em> (Yizhou Sun)</h3>
+          <ul>
+            <li>Graph neural networks and their applications to dynamical systems
+              <ul><li>GraphODE: Graph Neural Ordinary Differential Equations for Dynamical System Modeling</li><li>Expressivity and generalizability of GraphODE</li></ul>
+            </li>
+            <li>Generative AI for dynamical systems</li>
+          </ul></div>
       </div>
       <div class="part brk">
         <div class="lbl">3:00 – 3:30 PM</div>
         <div><h3>Coffee Break</h3></div>
       </div>
       <div class="part">
-        <div class="lbl">3:30 – 3:50 PM</div>
+        <div class="lbl">3:30 – 4:00 PM</div>
+        <div><h3>Recent Advances: <em>Deep Learning for Health Time Series</em> (Xiaoda Wang)</h3>
+          <ul><li>Task-specific supervised learning</li><li>Physiological foundation models</li><li>Multimodal learning</li></ul></div>
+      </div>
+      <div class="part">
+        <div class="lbl">4:00 – 4:10 PM</div>
         <div><h3>Limitations and Challenges (Xiaoda Wang)</h3>
-          <ul><li>Signal and data challenges</li><li>Model family limitations</li><li>Evaluation blind spots</li></ul></div>
+          <ul><li>Signal and data challenges</li><li>Limitations of current model families</li></ul></div>
       </div>
       <div class="part">
-        <div class="lbl">3:50 – 4:30 PM</div>
+        <div class="lbl">4:10 – 4:30 PM</div>
         <div><h3>Future Directions (Xiaoda Wang)</h3>
-          <ul><li>Waveform–language alignment</li><li>Agentic Plan–Act–Verify reasoning</li><li>Verification and evaluation</li></ul></div>
+          <ul><li>Waveform–language alignment</li><li>Agentic Plan–Act–Verify reasoning</li></ul></div>
       </div>
       <div class="part">
-        <div class="lbl">4:30 – 5:00 PM</div>
+        <div class="lbl">4:30 – 4:45 PM</div>
+        <div><h3>Concluding Remarks (Carl Yang)</h3>
+          <ul><li>Reasoning taxonomy</li><li>Key takeaways</li></ul></div>
+      </div>
+      <div class="part">
+        <div class="lbl">4:45 – 5:00 PM</div>
         <div><h3>Discussion &amp; Q&amp;A</h3></div>
       </div>
     </div>
@@ -239,33 +254,28 @@
         <div class="aff">Emory University</div>
       </div>
       <div class="person">
-        <img src="assets/img/xiaodawang.jpg" alt="Xiaoda Wang" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
-        <div class="name"><a href="https://ignite-abd.github.io/">Xiaoda Wang</a></div>
-        <div class="aff">Emory University</div>
-      </div>
-      <div class="person">
         <img src="assets/img/yanliu.jpg" alt="Yan Liu" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
         <div class="name"><a href="https://sites.google.com/view/yanliu-ai/home">Yan Liu</a></div>
-        <div class="aff">University of Southern California</div>
+        <div class="aff">USC</div>
       </div>
       <div class="person">
         <img src="assets/img/yizhousun.jpg" alt="Yizhou Sun" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
         <div class="name"><a href="https://www.cs.ucla.edu/~yzsun/">Yizhou Sun</a></div>
         <div class="aff">UCLA</div>
       </div>
+      <div class="person">
+        <img src="assets/img/xiaodawang.jpg" alt="Xiaoda Wang" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
+        <div class="name"><a href="https://ignite-abd.github.io/">Xiaoda Wang</a></div>
+        <div class="aff">Emory University</div>
+      </div>
     </div>
 
     <div class="grp-label" style="margin-top:42px;">Contributors</div>
     <div class="people reveal">
       <div class="person">
-        <img src="assets/img/weiwang.jpg" alt="Wei Wang" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
-        <div class="name"><a href="https://web.cs.ucla.edu/~weiwang/">Wei Wang</a></div>
-        <div class="aff">UCLA</div>
-      </div>
-      <div class="person">
         <img src="assets/img/chingchang.jpg" alt="Ching Chang" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
         <div class="name"><a href="https://blacksnail789521.github.io/">Ching Chang</a></div>
-        <div class="aff">UCLA / NYCU</div>
+        <div class="aff">UCLA</div>
       </div>
       <div class="person">
         <img src="assets/img/defucao.jpg" alt="Defu Cao" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
@@ -316,6 +326,11 @@
         <img src="assets/img/xiaohu.jpg" alt="Xiao Hu" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
         <div class="name"><a href="https://www.nursing.emory.edu/faculty-staff/xiao-hu">Xiao Hu</a></div>
         <div class="aff">Emory University</div>
+      </div>
+      <div class="person">
+        <img src="assets/img/weiwang.jpg" alt="Wei Wang" loading="lazy" width="92" height="92" decoding="async" onerror="this.style.opacity=.4" />
+        <div class="name"><a href="https://web.cs.ucla.edu/~weiwang/">Wei Wang</a></div>
+        <div class="aff">UCLA</div>
       </div>
     </div>
   </div>
